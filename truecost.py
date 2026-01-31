@@ -66,11 +66,13 @@ def calculate_true_hourly_wage():
     # TRANSPORTATION TYPE SELECTION
     print("\n--- Transportation Type ---")
     print("Select your transportation type:")
-    print("1. Driving (Car)")
+    print("1. Driving (Gasoline)")
     print("2. Public Transportation")
     print("3. Electric Vehicle (EV)")
+    print("4. Biking")
+    print("5. Walking")
     
-    transport_choice = input("Enter choice (1, 2, or 3): ")
+    transport_choice = input("Enter choice: ")
     
     # Initialize variables for all transport types
     transport_type = ""
@@ -118,17 +120,30 @@ def calculate_true_hourly_wage():
         daily_commute_miles = validate_input("One-way commute distance in miles: ", float, min_value=0)
         ev_efficiency = validate_input("EV efficiency (miles per kWh): ", float, min_value=0.1)
         electricity_price = validate_input("Electricity price ($ per kWh): $", float, min_value=0.01)
+    
+    elif transport_choice == '4':  # Biking
+        transport_type = "biking"
+        print("\n--- Biking Details ---")
+        daily_commute_miles = validate_input("One-way commute distance in miles: ", float, min_value=0)
         
-    else:  # Driving (default) - including if user enters anything other than '2' or '3'
+    elif transport_choice == '5':  # Walking
+        transport_type = "walking"
+        print("\n--- Walking Details ---")
+        daily_commute_miles = validate_input("One-way commute distance in miles: ", float, min_value=0)
+        
+    else:
         transport_type = "car"
         print("\n--- Car Details ---")
         daily_commute_miles = validate_input("One-way commute distance in miles: ", float, min_value=0)
         gas_mileage = validate_input("Car's MPG: ", float, min_value=0.1)
         gas_price = validate_input("Gas price per gallon: $", float, min_value=0.01)
     
-    # Additional commuting costs
+    # additional costs
     print("\n--- Additional Commuting Costs ---")
-    print("Additional daily commuting costs (parking, tolls, bike maintenance, etc.)")
+    if transport_type in ["biking", "walking"]:
+        print("Additional daily commuting costs (maintenance, etc.)")
+    else:
+        print("Additional daily commuting costs (tolls, etc.)")
     daily_other_costs = validate_input("Additional daily commuting costs: $", float, min_value=0, allow_zero=True)
     
     # Calculate annual income based on pay frequency
@@ -183,6 +198,18 @@ def calculate_true_hourly_wage():
         if daily_other_costs > 0:
             cost_details += f" + Other: ${daily_other_costs:.2f}"
     
+    elif transport_type == "biking":
+        daily_commute_cost = daily_other_costs
+        cost_details = "No fuel/transportation costs"
+        if daily_other_costs > 0:
+            cost_details = f"Maintenance/gear: ${daily_other_costs:.2f}"
+    
+    elif transport_type == "walking":
+        daily_commute_cost = daily_other_costs
+        cost_details = "No fuel/transportation costs"
+        if daily_other_costs > 0:
+            cost_details = f"Gear/other: ${daily_other_costs:.2f}"
+    
     # Yearly calculations
     weekly_work_hours = daily_work_hours * work_days_per_week
     weekly_commute_hours = daily_commute_hours * work_days_per_week
@@ -220,6 +247,10 @@ def calculate_true_hourly_wage():
         print(f"Transportation: Electric Vehicle")
     elif transport_type == "public_transport":
         print(f"Transportation: Public Transport")
+    elif transport_type == "biking":
+        print(f"Transportation: Biking")
+    elif transport_type == "walking":
+        print(f"Transportation: Walking")
     
     print(f"\n" + "-"*60)
     print("WAGE ANALYSIS")
@@ -244,7 +275,7 @@ def calculate_true_hourly_wage():
     print("COST BREAKDOWN")
     print("-"*60)
     
-    if transport_type in ["car", "ev"]:
+    if transport_type in ["car", "ev", "biking", "walking"]:
         round_trip_miles = daily_commute_miles * 2
         print(f"Round trip distance: {round_trip_miles:.1f} miles")
         
@@ -304,8 +335,7 @@ def calculate_true_hourly_wage():
 
 def main():
     """Main program"""
-    print("Welcome to the True Hourly Wage Calculator!")
-    print("This tool calculates your actual hourly wage including commute time and costs.")
+    print("Calculate your actual hourly wage including commute time and costs")
     
     while True:
         try:
@@ -320,7 +350,7 @@ def main():
                 break
                 
         except KeyboardInterrupt:
-            print("\n\nProgram interrupted. Goodbye!")
+            print("\n\nProgram interrupted")
             break
         except Exception as e:
             print(f"\nAn error occurred: {e}")
