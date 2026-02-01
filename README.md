@@ -52,10 +52,12 @@ Types of commutes:
     
 
 ## How to Use It
-
- 1.  **Run the program**: `python truecost.py`
+ 1. **RUN IT**
+ **Run Simple UI**: Just run the exe 'RealWageCalc`
+ OR
+ **Run the command line version**: `python truecost.py`
     
- 2.  **Enter your info**: How often you get paid and how much
+2.  **Enter your info**: How often you get paid and how much
 		 - Pay
 		 - Work Schedule
 		 - Commute Details
@@ -72,3 +74,8 @@ Knowing your true hourly wage helps with:
 -   **Budgeting**: How much are you _really_ spending to work?
     
 -   **Life planning**: Is your commute eating too much of your time and money?
+
+## For Command Line You Will Need
+- tkinter
+- matplotlib.pyplot
+- import numpy
