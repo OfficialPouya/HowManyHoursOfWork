@@ -381,35 +381,35 @@ class TrueHourlyWageCalculator:
         # wage Comparison
         wage_frame = ttk.LabelFrame(self.scrollable_frame, text="Wage Analysis", padding=15)
         wage_frame.pack(fill='x', padx=20, pady=10)
-        left_col = ttk.Frame(wage_frame)
-        left_col.pack(side='left', fill='both', expand=True, padx=10)
-        right_col = ttk.Frame(wage_frame)
-        right_col.pack(side='right', fill='both', expand=True, padx=10)
-        
-        # og wage
-        ttk.Label(left_col, text="Traditional Hourly Wage:", 
-                 font=self.body_font).pack(anchor='w', pady=5)
-        ttk.Label(left_col, text=f"${r['traditional_wage']:.2f}", 
-                 font=self.body_font, foreground='#2c3e50').pack(anchor='w', pady=5)
-        
-        # true wage
-        ttk.Label(right_col, text="True Hourly Wage:", 
-                 font=self.body_font).pack(anchor='w', pady=5)
-        ttk.Label(right_col, text=f"${r['true_wage']:.2f}", 
-                 font=self.body_font, foreground='#27ae60').pack(anchor='w', pady=5)
-        
+
+        # grid layout inside wage_frame
+        wage_frame.grid_columnconfigure(0, weight=1)  # Left column
+        wage_frame.grid_columnconfigure(1, weight=1)  # Middle column  
+        wage_frame.grid_columnconfigure(2, weight=1)  # Right column
+
+        # trad wage
+        ttk.Label(wage_frame, text="Traditional Hourly Wage:", 
+                font=self.heading_font).grid(row=0, column=0, sticky='w', padx=10, pady=5)
+        ttk.Label(wage_frame, text=f"${r['traditional_wage']:.2f}", 
+                font=self.heading_font, foreground='#2c3e50').grid(row=1, column=0, sticky='w', padx=10, pady=5)
+
         # diff
         diff = r['traditional_wage'] - r['true_wage']
-        diff_frame = ttk.Frame(wage_frame)
-        diff_frame.pack(fill='x', pady=10)
-        
-        ttk.Label(diff_frame, text=f"Difference: ${diff:.2f} per hour", 
-                 font=self.body_font).pack()
-        
+        ttk.Label(wage_frame, text="Difference:", 
+                font=self.heading_font).grid(row=0, column=1, sticky='w', padx=10, pady=5)
+        ttk.Label(wage_frame, text=f"${diff:.2f} per hour", 
+                font=self.heading_font).grid(row=1, column=1, sticky='w', padx=10, pady=5)
+
+        # true wage
+        ttk.Label(wage_frame, text="True Hourly Wage:", 
+                font=self.heading_font).grid(row=0, column=2, sticky='w', padx=10, pady=5)
+        ttk.Label(wage_frame, text=f"${r['true_wage']:.2f}", 
+                font=self.heading_font, foreground='#27ae60').grid(row=1, column=2, sticky='w', padx=10, pady=5)
+
         if diff > 0:
-            ttk.Label(diff_frame, 
-                     text=f"Your commute reduces your wage by ${diff:.2f}/hr (${diff * r['yearly_work_hours']:,.0f}/year)",
-                     foreground='#c0392b').pack()
+            ttk.Label(wage_frame, 
+                    text=f"Commute reduces wage by ${diff:.2f}/hr",
+                    font=self.subheading_font, foreground='#c0392b').grid(row=2, column=0, columnspan=3, sticky='w', padx=10, pady=(10, 0))
         
         time_frame = ttk.LabelFrame(self.scrollable_frame, text="Time Breakdown", padding=15)
         time_frame.pack(fill='x', padx=20, pady=10)
@@ -525,7 +525,7 @@ class TrueHourlyWageCalculator:
         vis_frame = ttk.LabelFrame(self.scrollable_frame, text="Wage Comparison", padding=15)
         vis_frame.pack(fill='x', padx=20, pady=10)
         
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
         fig.patch.set_facecolor('#f0f0f0')
         
         # bar graph for wages
