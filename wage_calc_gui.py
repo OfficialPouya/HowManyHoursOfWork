@@ -6,9 +6,17 @@ import numpy as np
 
 class TrueHourlyWageCalculator:
     def __init__(self, root):
+        #font tuple
+        self.font_family = "Segoe UI"  #hotswap fonts
+        self.title_font = (self.font_family, 24, 'bold')
+        self.heading_font = (self.font_family, 16, 'bold')
+        self.subheading_font = (self.font_family, 12, 'bold')
+        self.body_font = (self.font_family, 10)
+        self.small_font = (self.font_family, 9)
+
         self.root = root
         self.root.title("True Hourly Wage Calculator")
-        self.root.geometry("1200x800")
+        self.root.geometry("1500x1000")
         self.root.configure(bg='#f0f0f0')
         
         # vars
@@ -39,6 +47,9 @@ class TrueHourlyWageCalculator:
         #notebook for tabs
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True, padx=10, pady=10)
+        style = ttk.Style()
+        style.configure('TNotebook', background='#f0f0f0')
+        style.configure('TNotebook.Tab', background='#f0f0f0')
         
         # main page
         self.main_frame = ttk.Frame(self.notebook)
@@ -57,12 +68,12 @@ class TrueHourlyWageCalculator:
         main_container.pack(fill='both', expand=True, padx=20, pady=20)
         
         # Title
-        title_label = ttk.Label(main_container, text="True Hourly Wage Calculator", font=('Arial', 24, 'bold'))
+        title_label = ttk.Label(main_container, text="True Hourly Wage Calculator", font=self.title_font)
         title_label.pack(pady=(0, 30))
         
         #description
         description = """How much are you actaully getting paid?"""
-        desc_label = ttk.Label(main_container, text=description, font=('Arial', 11), wraplength=800, justify='center')
+        desc_label = ttk.Label(main_container, text=description, font=self.subheading_font, wraplength=800, justify='center')
         desc_label.pack(pady=(0, 30))
         
         # all input sections
@@ -81,32 +92,32 @@ class TrueHourlyWageCalculator:
         pay_frame = ttk.LabelFrame(left_column, text="Pay Information", padding=15)
         pay_frame.pack(fill='x', pady=(0, 20))
         
-        ttk.Label(pay_frame, text="Pay Frequency:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', pady=8)
+        ttk.Label(pay_frame, text="Pay Frequency:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
         freq_combo = ttk.Combobox(pay_frame, textvariable=self.pay_frequency,
                                  values=["daily", "weekly", "biweekly", "semi_monthly", "monthly"],
-                                 state="readonly", width=20, font=('Arial', 10))
+                                 state="readonly", width=20, font=self.body_font)
         freq_combo.grid(row=0, column=1, padx=10, pady=8, sticky='w')
         
-        ttk.Label(pay_frame, text="Take-home Pay:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', pady=8)
-        pay_entry = ttk.Entry(pay_frame, textvariable=self.paycheck_var, width=20, font=('Arial', 10))
+        ttk.Label(pay_frame, text="Take-home Pay:", font=self.body_font).grid(row=1, column=0, sticky='w', pady=8)
+        pay_entry = ttk.Entry(pay_frame, textvariable=self.paycheck_var, width=20, font=self.body_font)
         pay_entry.grid(row=1, column=1, padx=10, pady=8, sticky='w')
-        ttk.Label(pay_frame, text="$", font=('Arial', 10)).grid(row=1, column=2, sticky='w', pady=8)
+        ttk.Label(pay_frame, text="$", font=self.body_font).grid(row=1, column=2, sticky='w', pady=8)
         
         # Work Schedule Section
         work_frame = ttk.LabelFrame(left_column, text="Work Schedule", padding=15)
         work_frame.pack(fill='x', pady=(0, 20))
         
-        ttk.Label(work_frame, text="Daily Work Hours:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', pady=8)
+        ttk.Label(work_frame, text="Daily Work Hours:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
         hours_scale = ttk.Scale(work_frame, from_=1, to=12, variable=self.daily_hours_var, 
                                orient='horizontal', length=200)
         hours_scale.grid(row=0, column=1, padx=10, pady=8, sticky='w')
-        self.hours_label = ttk.Label(work_frame, text=f"{self.daily_hours_var.get():.1f} hrs", font=('Arial', 10))
+        self.hours_label = ttk.Label(work_frame, text=f"{self.daily_hours_var.get():.1f} hrs", font=self.body_font)
         self.hours_label.grid(row=0, column=2, padx=5, pady=8)
         
-        ttk.Label(work_frame, text="Work Days per Week:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', pady=8)
+        ttk.Label(work_frame, text="Work Days per Week:", font=self.body_font).grid(row=1, column=0, sticky='w', pady=8)
         days_scale = ttk.Scale(work_frame, from_=1, to=7, variable=self.work_days_var, orient='horizontal', length=200)
         days_scale.grid(row=1, column=1, padx=10, pady=8, sticky='w')
-        self.days_label = ttk.Label(work_frame, text=f"{self.work_days_var.get():.0f} days", font=('Arial', 10))
+        self.days_label = ttk.Label(work_frame, text=f"{self.work_days_var.get():.0f} days", font=self.body_font)
         self.days_label.grid(row=1, column=2, padx=5, pady=8)
         
         # ui scaling
@@ -117,10 +128,10 @@ class TrueHourlyWageCalculator:
         costs_frame = ttk.LabelFrame(left_column, text="Additional Costs", padding=15)
         costs_frame.pack(fill='x', pady=(0, 20))
         
-        ttk.Label(costs_frame, text="Additional Daily Costs:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', pady=8)
-        ttk.Entry(costs_frame, textvariable=self.daily_costs_var, width=20, font=('Arial', 10)).grid(row=0, column=1, padx=10, pady=8, sticky='w')
-        ttk.Label(costs_frame, text="$", font=('Arial', 10)).grid(row=0, column=2, sticky='w', pady=8)
-        ttk.Label(costs_frame, text="parking, tolls, etc.", font=('Arial', 9), foreground='gray').grid(row=1, column=0, columnspan=3, sticky='w', pady=(0, 5))
+        ttk.Label(costs_frame, text="Additional Daily Costs:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
+        ttk.Entry(costs_frame, textvariable=self.daily_costs_var, width=20, font=self.body_font).grid(row=0, column=1, padx=10, pady=8, sticky='w')
+        ttk.Label(costs_frame, text="$", font=self.body_font).grid(row=0, column=2, sticky='w', pady=8)
+        ttk.Label(costs_frame, text="parking, tolls, etc.", font=self.body_font, foreground='gray').grid(row=1, column=0, columnspan=3, sticky='w', pady=(0, 5))
         
         #calc button 
         ttk.Button(left_column, text="Calculate True Hourly Wage", 
@@ -130,11 +141,11 @@ class TrueHourlyWageCalculator:
         commute_time_frame = ttk.LabelFrame(right_column, text="Commute Time", padding=15)
         commute_time_frame.pack(fill='x', pady=(0, 20))
         
-        ttk.Label(commute_time_frame, text="One-way Commute Time:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', pady=8)
+        ttk.Label(commute_time_frame, text="One-way Commute Time:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
         commute_scale = ttk.Scale(commute_time_frame, from_=0, to=180, variable=self.commute_minutes_var,
                                  orient='horizontal', length=200)
         commute_scale.grid(row=0, column=1, padx=10, pady=8, sticky='w')
-        self.commute_label = ttk.Label(commute_time_frame, text=f"{self.commute_minutes_var.get():.0f} min", font=('Arial', 10))
+        self.commute_label = ttk.Label(commute_time_frame, text=f"{self.commute_minutes_var.get():.0f} min", font=self.body_font)
         self.commute_label.grid(row=0, column=2, padx=5, pady=8)
         
         # commute label when scale changes
@@ -171,47 +182,47 @@ class TrueHourlyWageCalculator:
         self.transport_details_frame.config(text=f"{transport_type.title()} Details")
         
         if transport_type == "car":
-            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=('Arial', 10)).grid(row=0, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=('Arial', 10)).grid(row=0, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="miles", font=('Arial', 10)).grid(row=0, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=self.body_font).grid(row=0, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="miles", font=self.body_font).grid(row=0, column=2, sticky='w', pady=8)
             
-            ttk.Label(self.transport_details_frame, text="Gas Price:", font=('Arial', 10)).grid(row=1, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.gas_price_var, width=15, font=('Arial', 10)).grid(row=1, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="$/gallon", font=('Arial', 10)).grid(row=1, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="Gas Price:", font=self.body_font).grid(row=1, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.gas_price_var, width=15, font=self.body_font).grid(row=1, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="$/gallon", font=self.body_font).grid(row=1, column=2, sticky='w', pady=8)
             
-            ttk.Label(self.transport_details_frame, text="MPG:", font=('Arial', 10)).grid(row=2, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.mpg_var, width=15, font=('Arial', 10)).grid(row=2, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="miles/gallon", font=('Arial', 10)).grid(row=2, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="MPG:", font=self.body_font).grid(row=2, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.mpg_var, width=15, font=self.body_font).grid(row=2, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="miles/gallon", font=self.body_font).grid(row=2, column=2, sticky='w', pady=8)
             
         elif transport_type == "ev":
-            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=('Arial', 10)).grid(row=0, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=('Arial', 10)).grid(row=0, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="miles", font=('Arial', 10)).grid(row=0, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=self.body_font).grid(row=0, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="miles", font=self.body_font).grid(row=0, column=2, sticky='w', pady=8)
             
-            ttk.Label(self.transport_details_frame, text="EV Efficiency:", font=('Arial', 10)).grid(row=1, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.ev_efficiency_var, width=15, font=('Arial', 10)).grid(row=1, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="mi/kWh", font=('Arial', 10)).grid(row=1, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="EV Efficiency:", font=self.body_font).grid(row=1, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.ev_efficiency_var, width=15, font=self.body_font).grid(row=1, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="mi/kWh", font=self.body_font).grid(row=1, column=2, sticky='w', pady=8)
             
-            ttk.Label(self.transport_details_frame, text="Electricity Price:", font=('Arial', 10)).grid(row=2, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.electricity_price_var, width=15, font=('Arial', 10)).grid(row=2, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="$/kWh", font=('Arial', 10)).grid(row=2, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="Electricity Price:", font=self.body_font).grid(row=2, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.electricity_price_var, width=15, font=self.body_font).grid(row=2, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="$/kWh", font=self.body_font).grid(row=2, column=2, sticky='w', pady=8)
             
         elif transport_type == "public":
             ttk.Radiobutton(self.transport_details_frame, text="Daily Cost", variable=self.use_monthly_pass, value=False, command=self.on_public_cost_change).grid(row=0, column=0, sticky='w', pady=8, padx=10)
             ttk.Radiobutton(self.transport_details_frame, text="Monthly Pass", variable=self.use_monthly_pass, value=True, command=self.on_public_cost_change).grid(row=0, column=1, sticky='w', pady=8, padx=10)
-            self.public_cost_label = ttk.Label(self.transport_details_frame, text="Daily Cost:", font=('Arial', 10))
+            self.public_cost_label = ttk.Label(self.transport_details_frame, text="Daily Cost:", font=self.body_font)
             self.public_cost_label.grid(row=1, column=0, sticky='w', pady=8)
-            self.public_cost_entry = ttk.Entry(self.transport_details_frame, textvariable=self.public_daily_cost_var, width=15, font=('Arial', 10))
+            self.public_cost_entry = ttk.Entry(self.transport_details_frame, textvariable=self.public_daily_cost_var, width=15, font=self.body_font)
             self.public_cost_entry.grid(row=1, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="$", font=('Arial', 10)).grid(row=1, column=2, sticky='w', pady=8)
-            ttk.Label(self.transport_details_frame, text="Walking Time to/from Stations:", font=('Arial', 10)).grid(row=2, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.public_walking_minutes_var, width=15, font=('Arial', 10)).grid(row=2, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="minutes", font=('Arial', 10)).grid(row=2, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="$", font=self.body_font).grid(row=1, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="Walking Time to/from Stations:", font=self.body_font).grid(row=2, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.public_walking_minutes_var, width=15, font=self.body_font).grid(row=2, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="minutes", font=self.body_font).grid(row=2, column=2, sticky='w', pady=8)
             
         elif transport_type in ["biking", "walking"]:
-            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=('Arial', 10)).grid(row=0, column=0, sticky='w', pady=8)
-            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=('Arial', 10)).grid(row=0, column=1, padx=10, pady=8)
-            ttk.Label(self.transport_details_frame, text="miles", font=('Arial', 10)).grid(row=0, column=2, sticky='w', pady=8)
+            ttk.Label(self.transport_details_frame, text="One-way Distance:", font=self.body_font).grid(row=0, column=0, sticky='w', pady=8)
+            ttk.Entry(self.transport_details_frame, textvariable=self.daily_miles_var, width=15, font=self.body_font).grid(row=0, column=1, padx=10, pady=8)
+            ttk.Label(self.transport_details_frame, text="miles", font=self.body_font).grid(row=0, column=2, sticky='w', pady=8)
             
     def on_transport_change(self):
         self.setup_transport_details()
@@ -225,19 +236,31 @@ class TrueHourlyWageCalculator:
                 self.public_cost_label.config(text="Daily Cost:")
                 self.public_cost_entry.config(textvariable=self.public_daily_cost_var)
     
+    
+    def update_canvas_width(self, event):
+        self.results_canvas.itemconfig(1, width=event.width)
+
     def setup_results_tab(self):
-        # populate with calculations
-        self.results_canvas = tk.Canvas(self.results_frame, bg='white')
+        # This will be populated after calculation
+        self.results_canvas = tk.Canvas(self.results_frame, bg='#f0f0f0', highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self.results_frame, orient="vertical", 
-                                      command=self.results_canvas.yview)
+                                    command=self.results_canvas.yview)
         self.scrollable_frame = ttk.Frame(self.results_canvas)
+        self.results_canvas.bind('<Configure>', self.update_canvas_width)
+        # config the scrollable frame to have the same background
+        style = ttk.Style()
+        style.configure('Results.TFrame', background='#f0f0f0')
+        self.scrollable_frame.configure(style='Results.TFrame')
+        
+        # make the window expand to fill width
+        self.results_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw", 
+                                        width=self.results_canvas.winfo_reqwidth())
         
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.results_canvas.configure(scrollregion=self.results_canvas.bbox("all"))
         )
         
-        self.results_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.results_canvas.configure(yscrollcommand=self.scrollbar.set)
         
         self.results_canvas.pack(side="left", fill="both", expand=True)
@@ -353,8 +376,7 @@ class TrueHourlyWageCalculator:
         header_frame = ttk.Frame(self.scrollable_frame)
         header_frame.pack(fill='x', padx=20, pady=20)
         
-        ttk.Label(header_frame, text="CALCULATION RESULTS", 
-                 font=('Arial', 20, 'bold')).pack()
+        ttk.Label(self.transport_details_frame, text="$/kWh", font=self.body_font).grid(row=2, column=2, sticky='w', pady=8)
         
         # wage Comparison
         wage_frame = ttk.LabelFrame(self.scrollable_frame, text="Wage Analysis", padding=15)
@@ -366,15 +388,15 @@ class TrueHourlyWageCalculator:
         
         # og wage
         ttk.Label(left_col, text="Traditional Hourly Wage:", 
-                 font=('Arial', 12)).pack(anchor='w', pady=5)
+                 font=self.body_font).pack(anchor='w', pady=5)
         ttk.Label(left_col, text=f"${r['traditional_wage']:.2f}", 
-                 font=('Arial', 24, 'bold'), foreground='#2c3e50').pack(anchor='w', pady=5)
+                 font=self.body_font, foreground='#2c3e50').pack(anchor='w', pady=5)
         
         # true wage
         ttk.Label(right_col, text="True Hourly Wage:", 
-                 font=('Arial', 12)).pack(anchor='w', pady=5)
+                 font=self.body_font).pack(anchor='w', pady=5)
         ttk.Label(right_col, text=f"${r['true_wage']:.2f}", 
-                 font=('Arial', 24, 'bold'), foreground='#27ae60').pack(anchor='w', pady=5)
+                 font=self.body_font, foreground='#27ae60').pack(anchor='w', pady=5)
         
         # diff
         diff = r['traditional_wage'] - r['true_wage']
@@ -382,7 +404,7 @@ class TrueHourlyWageCalculator:
         diff_frame.pack(fill='x', pady=10)
         
         ttk.Label(diff_frame, text=f"Difference: ${diff:.2f} per hour", 
-                 font=('Arial', 12, 'bold')).pack()
+                 font=self.body_font).pack()
         
         if diff > 0:
             ttk.Label(diff_frame, 
@@ -407,9 +429,9 @@ class TrueHourlyWageCalculator:
             row = i // 2
             col = (i % 2) * 2
             
-            ttk.Label(time_frame, text=label, font=('Arial', 10)).grid(row=row, column=col, 
+            ttk.Label(time_frame, text=label, font=self.body_font).grid(row=row, column=col, 
                                                                       sticky='w', padx=10, pady=5)
-            ttk.Label(time_frame, text=value, font=('Arial', 10, 'bold')).grid(row=row, 
+            ttk.Label(time_frame, text=value, font=self.body_font).grid(row=row, 
                                                                               column=col+1, 
                                                                               sticky='w', 
                                                                               padx=10, pady=5)
@@ -428,47 +450,47 @@ class TrueHourlyWageCalculator:
         }
         
         ttk.Label(cost_frame, text=f"Transportation: {transport_names.get(r['transport_type'], r['transport_type'])}",
-                 font=('Arial', 11, 'bold')).pack(anchor='w', pady=5)
+                 font=self.body_font).pack(anchor='w', pady=5)
         
         if r['transport_type'] in ['car', 'ev', 'biking', 'walking']:
             ttk.Label(cost_frame, text=f"Round Trip Distance: {r['daily_miles'] * 2:.1f} miles",
-                     font=('Arial', 10)).pack(anchor='w', pady=2)
+                     font=self.body_font).pack(anchor='w', pady=2)
         
         ttk.Label(cost_frame, text=f"Daily Cost Breakdown: {r['cost_breakdown']}",
-                 font=('Arial', 10)).pack(anchor='w', pady=2)
+                 font=self.body_font).pack(anchor='w', pady=2)
         
         if self.daily_costs_var.get() > 0 and r['transport_type'] not in ['biking', 'walking']:
             ttk.Label(cost_frame, text=f"+ Additional Costs: ${self.daily_costs_var.get():.2f}",
-                     font=('Arial', 10)).pack(anchor='w', pady=2)
+                     font=self.body_font).pack(anchor='w', pady=2)
         
         ttk.Label(cost_frame, text=f"Total Daily Commute Cost: ${r['daily_commute_cost']:.2f}",
-                 font=('Arial', 10, 'bold')).pack(anchor='w', pady=5)
+                 font=self.body_font).pack(anchor='w', pady=5)
         
         # yearly costs
         yearly_cost_frame = ttk.Frame(cost_frame)
         yearly_cost_frame.pack(fill='x', pady=10)
         
         ttk.Label(yearly_cost_frame, text="Yearly Take-home Pay:", 
-                 font=('Arial', 10)).pack(side='left', padx=20)
+                 font=self.body_font).pack(side='left', padx=20)
         ttk.Label(yearly_cost_frame, text=f"${r['annual_income']:,.2f}", 
-                 font=('Arial', 12, 'bold')).pack(side='left', padx=10)
+                 font=self.body_font).pack(side='left', padx=10)
         
         ttk.Label(yearly_cost_frame, text="Yearly Commute Costs:", 
-                 font=('Arial', 10)).pack(side='left', padx=20)
+                 font=self.body_font).pack(side='left', padx=20)
         ttk.Label(yearly_cost_frame, text=f"${r['yearly_commute_costs']:,.2f}", 
-                 font=('Arial', 12, 'bold'), foreground='#c0392b').pack(side='left', padx=10)
+                 font=self.body_font, foreground='#c0392b').pack(side='left', padx=10)
         
         ttk.Label(yearly_cost_frame, text="Net Yearly Income:", 
-                 font=('Arial', 10)).pack(side='left', padx=20)
+                 font=self.body_font).pack(side='left', padx=20)
         ttk.Label(yearly_cost_frame, text=f"${r['net_yearly_income']:,.2f}", 
-                 font=('Arial', 12, 'bold'), foreground='#27ae60').pack(side='left', padx=10)
+                 font=self.body_font, foreground='#27ae60').pack(side='left', padx=10)
         
         # % of income spent on commute
         if r['annual_income'] > 0:
             cost_percentage = (r['yearly_commute_costs'] / r['annual_income']) * 100
             ttk.Label(cost_frame, 
                      text=f"Commute costs consume {cost_percentage:.1f}% of your take-home pay",
-                     font=('Arial', 10, 'italic')).pack(anchor='w', pady=5)
+                     font=self.body_font).pack(anchor='w', pady=5)
         
         # paycheck
         paycheck_frame = ttk.LabelFrame(self.scrollable_frame, text="Paycheck Perspective", padding=15)
@@ -483,15 +505,15 @@ class TrueHourlyWageCalculator:
             percentage = (biweekly_commute_cost / paycheck) * 100 if paycheck > 0 else 0
             
             ttk.Label(paycheck_frame, text="Per Bi-weekly Paycheck:", 
-                     font=('Arial', 11, 'bold')).pack(anchor='w', pady=5)
+                     font=self.body_font).pack(anchor='w', pady=5)
             
             ttk.Label(paycheck_frame, 
                      text=f"Take-home: ${paycheck:.2f} | Commute costs: ${biweekly_commute_cost:.2f} | Effective: ${paycheck - biweekly_commute_cost:.2f}",
-                     font=('Arial', 10)).pack(anchor='w', pady=2)
+                     font=self.body_font).pack(anchor='w', pady=2)
             
             ttk.Label(paycheck_frame, 
                      text=f"Commute time: {biweekly_commute_hours:.1f} hours | Commute eats {percentage:.1f}% of your paycheck",
-                     font=('Arial', 10)).pack(anchor='w', pady=2)
+                     font=self.body_font).pack(anchor='w', pady=2)
         
         # visualization
         self.create_visualization()
@@ -542,12 +564,17 @@ class TrueHourlyWageCalculator:
 
 def main():
     root = tk.Tk()
-    
     style = ttk.Style()
-    style.theme_use('clam')
-    
+    style.configure('TFrame', background='#f0f0f0')
+    style.configure('TLabelFrame', background='#f0f0f0')
+    style.configure('TLabelframe.Label', background='#f0f0f0')
+    style.configure('TNotebook', background='#f0f0f0')
+    style.configure('TNotebook.Tab', background='#f0f0f0', foreground='black')
+    style.map('TNotebook.Tab', 
+          background=[('selected', '#f0f0f0')],
+          foreground=[('selected', 'black')])
     # config colors
-    style.configure('Accent.TButton', font=('Arial', 12, 'bold'))
+    style.configure('Accent.TButton', font=('Segoe UI', 12, 'bold'))  
     style.map('Accent.TButton', background=[('active', '#2980b9'), ('pressed', '#1c638e')])
     
     app = TrueHourlyWageCalculator(root)
