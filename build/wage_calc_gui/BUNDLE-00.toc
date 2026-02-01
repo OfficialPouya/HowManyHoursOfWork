@@ -1,0 +1,3 @@
+([('wage_calc_gui',
+   '/Users/pouya/Documents/GitHub/HowManyHoursOfWork/dist/wage_calc_gui',
+   'EXECUTABLE')],)
