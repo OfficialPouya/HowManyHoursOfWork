@@ -3,9 +3,9 @@
 
 A Python tool that figures out what you _really_ make per hour when you include all the hidden costs of getting to and from work.
 ## YouTube Video 
-![Video](https://youtu.be/dLjzEjfybww)
+[Video](https://youtu.be/dLjzEjfybww)
 ## New UI!
-[Main Screen](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.51.40%E2%80%AFPM.png?raw=true)
+![Main Screen](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.51.40%E2%80%AFPM.png?raw=true)
 ![Pay Frequency](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.06%E2%80%AFPM.png?raw=true)
 ![Gas Car](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.19%E2%80%AFPM.png?raw=true)
 ![EV Car](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.27%E2%80%AFPM.png?raw=true)
