@@ -1,3 +1,0 @@
-([('WageCalculatorWindowsVersion',
-   '/Users/pouya/Documents/GitHub/HowManyHoursOfWork/dist/WageCalculatorWindowsVersion',
-   'EXECUTABLE')],)
