@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>True Hourly Wage Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: rgba(30, 41, 59, 0.7);
+            --bg-tertiary: rgba(51, 65, 85, 0.5);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: rgba(71, 85, 105, 0.5);
+            --shadow: rgba(0, 0, 0, 0.4);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #1a1f3a 0%, var(--bg-primary) 90%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            text-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            animation: fadeIn 1s ease-out 0.2s backwards;
+            position: relative;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--primary-light);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 -5px 15px var(--primary);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; left: 50%; }
+            to { width: 100%; left: 0; }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px var(--shadow);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-light);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card h2::before {
+            content: '';
+            width: 6px;
+            height: 1.5rem;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 0;
+            margin-top: 0.5rem;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+        }
+
+        .range-value {
+            display: inline-block;
+            margin-left: 1rem;
+            color: var(--primary-light);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            position: relative;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .radio-option label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 1rem;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            box-shadow: none;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            box-shadow: 0 5px 15px var(--shadow);
+            border-color: var(--primary-light);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.6));
+            padding: 2rem 1.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .stat-card:hover {
+            transform: scale(1.03);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        .stat-value.success {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            -webkit-background-clip: text;
+        }
+
+        .stat-value.danger {
+            background: linear-gradient(135deg, var(--danger), #f87171);
+            -webkit-background-clip: text;
+        }
+
+        .chart-container {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            height: 400px;
+            position: relative;
+        }
+
+        .breakdown-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            background: rgba(51, 65, 85, 0.4);
+            border-radius: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .breakdown-item:hover {
+            background: rgba(51, 65, 85, 0.6);
+            transform: translateX(8px);
+            border-left-color: var(--accent);
+        }
+
+        .breakdown-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .breakdown-value {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary-light);
+            font-size: 1.1rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: rgba(51, 65, 85, 0.6);
+            font-weight: 700;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table td {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(51, 65, 85, 0.6);
+        }
+
+        .diff-positive {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .diff-negative {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .note {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .note::before {
+            content: 'ℹ️';
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .tabs { overflow-x: auto; padding-bottom: 0.5rem; }
+            .tab { white-space: nowrap; padding: 0.75rem 1.5rem; font-size: 1rem; }
+            .container { padding: 1rem; }
+            .stat-value { font-size: 2rem; }
+            .card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>True Hourly Wage</h1>
+            <p class="subtitle">Discover what you're actually earning when you factor in commute time & costs</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(event, 'calculator')">Calculator</button>
+            <button class="tab" onclick="switchTab(event, 'results')">Results</button>
+            <button class="tab" onclick="switchTab(event, 'compare')">Compare Commutes</button>
+        </div>
+
+        <!-- Calculator Tab -->
+        <div id="calculator" class="tab-content active">
+            <div class="grid">
+                <!-- Pay Information -->
+                <div class="card">
+                    <h2>Pay Information</h2>
+                    <div class="form-group">
+                        <label for="payFrequency">Pay Frequency</label>
+                        <select id="payFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly" selected>Bi-weekly</option>
+                            <option value="semi_monthly">Semi-monthly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="takeHomePay">Take-home Pay ($)</label>
+                        <input type="number" id="takeHomePay" value="2000" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <!-- Work Schedule -->
+                <div class="card">
+                    <h2>Work Schedule</h2>
+                    <div class="form-group">
+                        <label for="dailyHours">Daily Work Hours: <span class="range-value" id="dailyHoursValue">8.0</span></label>
+                        <input type="range" id="dailyHours" min="1" max="12" step="0.5" value="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="workDays">Work Days per Week: <span class="range-value" id="workDaysValue">5</span></label>
+                        <input type="range" id="workDays" min="1" max="7" step="1" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="wfhDays">WFH Days per Week: <span class="range-value" id="wfhDaysValue">0</span></label>
+                        <input type="range" id="wfhDays" min="0" max="7" step="1" value="0">
+                    </div>
+                </div>
+
+                <!-- Commute Time -->
+                <div class="card">
+                    <h2>Commute Time</h2>
+                    <div class="form-group">
+                        <label for="commuteTime">One-way Commute Time (minutes)</label>
+                        <input type="number" id="commuteTime" value="30" step="1" min="0">
+                    </div>
+                </div>
+
+                <!-- Transportation Type -->
+                <div class="card">
+                    <h2>Transportation Type</h2>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="transportCar" name="transport" value="car" checked>
+                            <label for="transportCar">Car</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="transportEV" name="transport" value="ev">
+                            <label for="transportEV">EV</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="transportPublic" name="transport" value="public">
+                            <label for="transportPublic">Public</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="transportBike" name="transport" value="biking">
+                            <label for="transportBike">Bike</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="transportWalk" name="transport" value="walking">
+                            <label for="transportWalk">Walk</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transport Details (Dynamic) -->
+            <div class="card" id="transportDetails">
+                <h2>Transport Details</h2>
+                <div id="transportDetailsContent"></div>
+            </div>
+
+            <!-- Additional Costs -->
+            <div class="card">
+                <h2>Additional Costs</h2>
+                <div class="form-group">
+                    <label for="additionalCosts">Additional Daily Costs ($)</label>
+                    <input type="number" id="additionalCosts" value="5" step="0.01" min="0">
+                    <div class="note">Parking, tolls, coffee, etc.</div>
+                </div>
+            </div>
+
+            <button class="btn btn-full" onclick="calculate()">Calculate True Hourly Wage</button>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="results" class="tab-content">
+            <div class="result-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Traditional Wage</div>
+                    <div class="stat-value" id="traditionalWage">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">True Hourly Wage</div>
+                    <div class="stat-value success" id="trueWage">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Difference</div>
+                    <div class="stat-value danger" id="wageDiff">$0.00</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>Time Breakdown</h2>
+                    <ul class="breakdown-list" id="timeBreakdown"></ul>
+                </div>
+
+                <div class="card">
+                    <h2>Cost Breakdown</h2>
+                    <ul class="breakdown-list" id="costBreakdown"></ul>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="chart-container">
+                    <canvas id="wageChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compare Tab -->
+        <div id="compare" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>Current Commute</h2>
+                    <p class="note">Values from Calculator tab</p>
+                </div>
+                <div class="card">
+                    <h2>Alternative Commute</h2>
+                    <button class="btn btn-secondary" onclick="copyCurrentToAlt()">Copy from Current</button>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- Alternative Commute Inputs -->
+                <div class="card">
+                    <h2>Alternative Time</h2>
+                    <div class="form-group">
+                        <label for="altCommuteTime">One-way Commute Time (minutes)</label>
+                        <input type="number" id="altCommuteTime" value="30" step="1" min="0">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Alternative Transport</h2>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="altTransportCar" name="alttransport" value="car" checked>
+                            <label for="altTransportCar">Car</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="altTransportEV" name="alttransport" value="ev">
+                            <label for="altTransportEV">EV</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="altTransportPublic" name="alttransport" value="public">
+                            <label for="altTransportPublic">Public</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="altTransportBike" name="alttransport" value="biking">
+                            <label for="altTransportBike">Bike</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="altTransportWalk" name="alttransport" value="walking">
+                            <label for="altTransportWalk">Walk</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="altTransportDetails">
+                <h2>Alternative Transport Details</h2>
+                <div id="altTransportDetailsContent"></div>
+            </div>
+
+            <div class="card">
+                <h2>Alternative Additional Costs</h2>
+                <div class="form-group">
+                    <label for="altAdditionalCosts">Additional Daily Costs ($)</label>
+                    <input type="number" id="altAdditionalCosts" value="5" step="0.01" min="0">
+                </div>
+            </div>
+
+            <button class="btn btn-full" onclick="compareCommutes()">Compare Commutes</button>
+
+            <div id="comparisonResults" class="hidden">
+                <div class="card">
+                    <h2>Comparison Results</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current</th>
+                                <th>Alternative</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid">
+                    <div class="chart-container">
+                        <canvas id="comparisonWageChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="comparisonCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let wageChart, timeChart, compWageChart, compCostChart;
+        let currentResults = null;
+
+        // Range slider updates
+        document.getElementById('dailyHours').addEventListener('input', (e) => {
+            document.getElementById('dailyHoursValue').textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        document.getElementById('workDays').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            document.getElementById('workDaysValue').textContent = val;
+            // Auto-adjust WFH max
+            const wfhInput = document.getElementById('wfhDays');
+            wfhInput.max = val;
+            if(parseInt(wfhInput.value) > val) {
+                wfhInput.value = val;
+                document.getElementById('wfhDaysValue').textContent = val;
+            }
+        });
+
+        document.getElementById('wfhDays').addEventListener('input', (e) => {
+            document.getElementById('wfhDaysValue').textContent = parseInt(e.target.value);
+        });
+
+        // Transport type change handlers
+        document.querySelectorAll('input[name="transport"]').forEach(radio => {
+            radio.addEventListener('change', () => updateTransportDetails(''));
+        });
+
+        document.querySelectorAll('input[name="alttransport"]').forEach(radio => {
+            radio.addEventListener('change', () => updateTransportDetails('alt'));
+        });
+
+        function switchTab(event, tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function updateTransportDetails(prefix) {
+            const transport = document.querySelector(`input[name="${prefix}transport"]:checked`).value;
+            const containerId = prefix ? 'altTransportDetailsContent' : 'transportDetailsContent';
+            const container = document.getElementById(containerId);
+            
+            let html = '';
+            
+            if (transport === 'car') {
+                html = `
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="${prefix}distance">One-way Distance (miles)</label>
+                            <input type="number" id="${prefix}distance" value="10" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="${prefix}mpg">MPG (miles/gallon)</label>
+                            <input type="number" id="${prefix}mpg" value="25" step="0.1" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="${prefix}gasPrice">Gas Price ($/gallon)</label>
+                        <input type="number" id="${prefix}gasPrice" value="3.50" step="0.01" min="0">
+                    </div>
+                `;
+            } else if (transport === 'ev') {
+                html = `
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="${prefix}distance">One-way Distance (miles)</label>
+                            <input type="number" id="${prefix}distance" value="10" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="${prefix}evEfficiency">EV Efficiency (mi/kWh)</label>
+                            <input type="number" id="${prefix}evEfficiency" value="4.0" step="0.1" min="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="${prefix}electricityPrice">Electricity Price ($/kWh)</label>
+                        <input type="number" id="${prefix}electricityPrice" value="0.15" step="0.01" min="0">
+                    </div>
+                `;
+            } else if (transport === 'public') {
+                html = `
+                    <div class="form-group">
+                        <label>Cost Structure</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="${prefix}publicDaily" name="${prefix}publicCost" value="daily" checked>
+                                <label for="${prefix}publicDaily">Daily Cost</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="${prefix}publicMonthly" name="${prefix}publicCost" value="monthly">
+                                <label for="${prefix}publicMonthly">Monthly Pass</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="${prefix}publicCostValue">Cost ($)</label>
+                        <input type="number" id="${prefix}publicCostValue" value="5.50" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="${prefix}walkingTime">Walking Time to/from Stations (minutes)</label>
+                        <input type="number" id="${prefix}walkingTime" value="10" step="1" min="0">
+                    </div>
+                `;
+            } else if (transport === 'biking' || transport === 'walking') {
+                html = `
+                    <div class="form-group">
+                        <label for="${prefix}distance">One-way Distance (miles)</label>
+                        <input type="number" id="${prefix}distance" value="5" step="0.1" min="0">
+                    </div>
+                    <div class="note">No fuel/transportation costs calculated for ${transport}.</div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function getTransportData(prefix = '') {
+            // prefix is '' for main, 'alt' for alternative
+            const transport = document.querySelector(`input[name="${prefix}transport"]:checked`).value;
+            const data = { type: transport };
+            
+            if (transport === 'car') {
+                data.distance = parseFloat(document.getElementById(`${prefix}distance`).value) || 0;
+                data.gasPrice = parseFloat(document.getElementById(`${prefix}gasPrice`).value) || 0;
+                data.mpg = parseFloat(document.getElementById(`${prefix}mpg`).value) || 1;
+            } else if (transport === 'ev') {
+                data.distance = parseFloat(document.getElementById(`${prefix}distance`).value) || 0;
+                data.evEfficiency = parseFloat(document.getElementById(`${prefix}evEfficiency`).value) || 1;
+                data.electricityPrice = parseFloat(document.getElementById(`${prefix}electricityPrice`).value) || 0;
+            } else if (transport === 'public') {
+                const costTypeRadio = document.querySelector(`input[name="${prefix}publicCost"]:checked`);
+                data.costType = costTypeRadio ? costTypeRadio.value : 'daily';
+                data.cost = parseFloat(document.getElementById(`${prefix}publicCostValue`).value) || 0;
+                const walkInput = document.getElementById(`${prefix}walkingTime`);
+                data.walkingTime = walkInput ? parseFloat(walkInput.value) : 0;
+            } else {
+                const distInput = document.getElementById(`${prefix}distance`);
+                data.distance = distInput ? parseFloat(distInput.value) : 0;
+            }
+            
+            return data;
+        }
+
+        function calculateCommuteMetrics(transport, commuteMinutes, workDays, wfhDays, additionalCosts) {
+            const commuteDays = Math.max(0, workDays - wfhDays);
+            let totalCommuteTime = commuteMinutes;
+            let dailyCost = additionalCosts;
+            let costBreakdown = { type: 'None', amount: 0 };
+            
+            if (transport.type === 'car') {
+                const roundTripMiles = transport.distance * 2;
+                const fuelCost = (roundTripMiles / transport.mpg) * transport.gasPrice;
+                dailyCost += fuelCost;
+                costBreakdown = { type: 'Fuel', amount: fuelCost };
+            } else if (transport.type === 'ev') {
+                const roundTripMiles = transport.distance * 2;
+                const electricityCost = (roundTripMiles / transport.evEfficiency) * transport.electricityPrice;
+                dailyCost += electricityCost;
+                costBreakdown = { type: 'Electricity', amount: electricityCost };
+            } else if (transport.type === 'public') {
+                totalCommuteTime += transport.walkingTime;
+                const transportCost = transport.costType === 'monthly' 
+                    ? transport.cost / (Math.max(1, commuteDays) * 4.33) 
+                    : transport.cost;
+                dailyCost += transportCost;
+                costBreakdown = { type: 'Transport', amount: transportCost };
+            } else {
+                costBreakdown = { type: 'N/A', amount: 0 };
+            }
+            
+            const dailyCommuteHours = (totalCommuteTime * 2) / 60;
+            const weeklyCommuteHours = dailyCommuteHours * commuteDays;
+            const weeklyCommuteCosts = dailyCost * commuteDays;
+            const yearlyCommuteHours = weeklyCommuteHours * 52; // Full year
+            const yearlyCommuteCosts = weeklyCommuteCosts * 52;
+            
+            return {
+                dailyCommuteHours,
+                dailyCommuteCost: dailyCost,
+                yearlyCommuteHours,
+                yearlyCommuteCosts,
+                costBreakdown,
+                commuteDays
+            };
+        }
+
+        function calculate() {
+            const payFrequency = document.getElementById('payFrequency').value;
+            const paycheck = parseFloat(document.getElementById('takeHomePay').value) || 0;
+            const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 0;
+            const workDays = parseInt(document.getElementById('workDays').value) || 0;
+            const wfhDays = parseInt(document.getElementById('wfhDays').value) || 0;
+            const commuteMinutes = parseFloat(document.getElementById('commuteTime').value) || 0;
+            const additionalCosts = parseFloat(document.getElementById('additionalCosts').value) || 0;
+            
+            // Validation
+            const wfhInput = document.getElementById('wfhDays');
+            if (wfhDays > workDays) {
+                wfhInput.classList.add('input-error');
+                alert('WFH days cannot exceed work days per week');
+                return;
+            } else {
+                wfhInput.classList.remove('input-error');
+            }
+            
+            // Calculate annual income
+            let annualIncome = 0;
+            switch(payFrequency) {
+                case 'daily': annualIncome = paycheck * workDays * 52; break;
+                case 'weekly': annualIncome = paycheck * 52; break;
+                case 'biweekly': annualIncome = paycheck * 26; break;
+                case 'semi_monthly': annualIncome = paycheck * 24; break;
+                case 'monthly': annualIncome = paycheck * 12; break;
+            }
+            
+            const transport = getTransportData('');
+            const metrics = calculateCommuteMetrics(transport, commuteMinutes, workDays, wfhDays, additionalCosts);
+            
+            const yearlyWorkHours = dailyHours * workDays * 52;
+            const traditionalWage = yearlyWorkHours > 0 ? annualIncome / yearlyWorkHours : 0;
+            const netYearlyIncome = annualIncome - metrics.yearlyCommuteCosts;
+            const totalCommittedHours = yearlyWorkHours + metrics.yearlyCommuteHours;
+            const trueWage = totalCommittedHours > 0 ? netYearlyIncome / totalCommittedHours : 0;
+            const wageDiff = traditionalWage - trueWage;
+            
+            currentResults = {
+                traditionalWage,
+                trueWage,
+                wageDiff,
+                annualIncome,
+                netYearlyIncome,
+                yearlyWorkHours,
+                yearlyCommuteHours: metrics.yearlyCommuteHours,
+                yearlyCommuteCosts: metrics.yearlyCommuteCosts,
+                dailyCommuteHours: metrics.dailyCommuteHours,
+                dailyCommuteCost: metrics.dailyCommuteCost,
+                costBreakdown: metrics.costBreakdown,
+                commuteDays: metrics.commuteDays,
+                wfhDays,
+                workDays,
+                dailyHours,
+                transport: transport.type
+            };
+            
+            displayResults();
+            copyCurrentToAlt();
+            
+            // Switch to results tab programmatically
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab:nth-child(2)').classList.add('active'); // Results tab
+            document.getElementById('results').classList.add('active');
+        }
+
+        function displayResults() {
+            const r = currentResults;
+            
+            document.getElementById('traditionalWage').textContent = `$${r.traditionalWage.toFixed(2)}`;
+            document.getElementById('trueWage').textContent = `$${r.trueWage.toFixed(2)}`;
+            document.getElementById('wageDiff').textContent = `$${r.wageDiff.toFixed(2)}`;
+            
+            // Time breakdown
+            const timeBreakdown = document.getElementById('timeBreakdown');
+            timeBreakdown.innerHTML = `
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Daily Work Hours</span>
+                    <span class="breakdown-value">${r.dailyHours.toFixed(1)} hrs</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Daily Commute Time</span>
+                    <span class="breakdown-value">${r.dailyCommuteHours.toFixed(1)} hrs</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Commute Days per Week</span>
+                    <span class="breakdown-value">${r.commuteDays} days</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">WFH Days per Week</span>
+                    <span class="breakdown-value">${r.wfhDays} days</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Yearly Work Hours</span>
+                    <span class="breakdown-value">${r.yearlyWorkHours.toFixed(0)} hrs</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Yearly Commute Hours</span>
+                    <span class="breakdown-value">${r.yearlyCommuteHours.toFixed(0)} hrs</span>
+                </li>
+            `;
+            
+            // Cost breakdown
+            const costBreakdown = document.getElementById('costBreakdown');
+            const costPercentage = r.annualIncome > 0 ? ((r.yearlyCommuteCosts / r.annualIncome) * 100).toFixed(1) : 0;
+            costBreakdown.innerHTML = `
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Transportation Type</span>
+                    <span class="breakdown-value">${r.transport.charAt(0).toUpperCase() + r.transport.slice(1)}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Daily Cost</span>
+                    <span class="breakdown-value">$${r.dailyCommuteCost.toFixed(2)}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">${r.costBreakdown.type}</span>
+                    <span class="breakdown-value">$${r.costBreakdown.amount.toFixed(2)}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Yearly Take-home Pay</span>
+                    <span class="breakdown-value">$${r.annualIncome.toLocaleString()}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Yearly Commute Costs</span>
+                    <span class="breakdown-value">$${r.yearlyCommuteCosts.toLocaleString()}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Net Yearly Income</span>
+                    <span class="breakdown-value">$${r.netYearlyIncome.toLocaleString()}</span>
+                </li>
+                <li class="breakdown-item">
+                    <span class="breakdown-label">Commute % of Income</span>
+                    <span class="breakdown-value">${costPercentage}%</span>
+                </li>
+            `;
+            
+            // Charts
+            createWageChart();
+            createTimeChart();
+        }
+
+        function createWageChart() {
+            const ctx = document.getElementById('wageChart').getContext('2d');
+            if (wageChart) wageChart.destroy();
+            
+            wageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Traditional Wage', 'True Hourly Wage'],
+                    datasets: [{
+                        label: 'Hourly Wage ($)',
+                        data: [currentResults.traditionalWage, currentResults.trueWage],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Wage Comparison',
+                            color: '#f8fafc',
+                            font: { size: 18, weight: 'bold', family: 'Outfit' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#cbd5e1', font: { family: 'JetBrains Mono' } },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            ticks: { color: '#cbd5e1', font: { family: 'Outfit' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTimeChart() {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            if (timeChart) timeChart.destroy();
+            
+            timeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Work Hours', 'Commute Hours'],
+                    datasets: [{
+                        data: [currentResults.yearlyWorkHours, currentResults.yearlyCommuteHours],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#cbd5e1', font: { size: 14, family: 'Outfit' }, padding: 20 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Yearly Time Allocation',
+                            color: '#f8fafc',
+                            font: { size: 18, weight: 'bold', family: 'Outfit' },
+                            padding: { bottom: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function copyCurrentToAlt() {
+            if (!currentResults) return;
+            
+            document.getElementById('altCommuteTime').value = document.getElementById('commuteTime').value;
+            document.getElementById('altAdditionalCosts').value = document.getElementById('additionalCosts').value;
+            
+            const currentTransport = document.querySelector('input[name="transport"]:checked').value;
+            document.querySelector(`input[name="alttransport"][value="${currentTransport}"]`).checked = true;
+            updateTransportDetails('alt');
+            
+            // Copy transport-specific values after a slight delay to allow DOM update
+            setTimeout(() => {
+                try {
+                    if (currentTransport === 'car') {
+                        document.getElementById('altdistance').value = document.getElementById('distance').value;
+                        document.getElementById('altgasPrice').value = document.getElementById('gasPrice').value;
+                        document.getElementById('altmpg').value = document.getElementById('mpg').value;
+                    } else if (currentTransport === 'ev') {
+                        document.getElementById('altdistance').value = document.getElementById('distance').value;
+                        document.getElementById('altevEfficiency').value = document.getElementById('evEfficiency').value;
+                        document.getElementById('altelectricityPrice').value = document.getElementById('electricityPrice').value;
+                    } else if (currentTransport === 'public') {
+                        const costType = document.querySelector('input[name="publicCost"]:checked')?.value || 'daily';
+                        const altRadio = document.querySelector(`input[name="altpublicCost"][value="${costType}"]`);
+                        if(altRadio) altRadio.checked = true;
+                        
+                        const currentCost = document.getElementById('publicCostValue');
+                        const altCost = document.getElementById('altpublicCostValue');
+                        if(currentCost && altCost) altCost.value = currentCost.value;
+                        
+                        const currentWalk = document.getElementById('walkingTime');
+                        const altWalk = document.getElementById('altwalkingTime');
+                        if(currentWalk && altWalk) altWalk.value = currentWalk.value;
+                    } else if (currentTransport === 'biking' || currentTransport === 'walking') {
+                        const currentDist = document.getElementById('distance');
+                        const altDist = document.getElementById('altdistance');
+                        if(currentDist && altDist) altDist.value = currentDist.value;
+                    }
+                } catch (e) {
+                    console.error("Error copying values:", e);
+                }
+            }, 50);
+        }
+
+        function compareCommutes() {
+            if (!currentResults) {
+                alert('Please calculate your current commute first in the Calculator tab.');
+                // Switch to calculator tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('calculator').classList.add('active');
+                return;
+            }
+            
+            const workDays = currentResults.workDays;
+            const wfhDays = currentResults.wfhDays;
+            const altCommuteMinutes = parseFloat(document.getElementById('altCommuteTime').value) || 0;
+            const altAdditionalCosts = parseFloat(document.getElementById('altAdditionalCosts').value) || 0;
+            const altTransport = getTransportData('alt');
+            
+            const altMetrics = calculateCommuteMetrics(altTransport, altCommuteMinutes, workDays, wfhDays, altAdditionalCosts);
+            
+            const altNetIncome = currentResults.annualIncome - altMetrics.yearlyCommuteCosts;
+            const altTotalHours = currentResults.yearlyWorkHours + altMetrics.yearlyCommuteHours;
+            const altTrueWage = altTotalHours > 0 ? altNetIncome / altTotalHours : 0;
+            
+            const comparison = {
+                current: currentResults,
+                alt: {
+                    dailyCommuteHours: altMetrics.dailyCommuteHours,
+                    dailyCommuteCost: altMetrics.dailyCommuteCost,
+                    yearlyCommuteHours: altMetrics.yearlyCommuteHours,
+                    yearlyCommuteCosts: altMetrics.yearlyCommuteCosts,
+                    trueWage: altTrueWage
+                }
+            };
+            
+            displayComparison(comparison);
+        }
+
+        function displayComparison(comp) {
+            const resultsDiv = document.getElementById('comparisonResults');
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            const tbody = document.getElementById('comparisonTableBody');
+            const metrics = [
+                {
+                    label: 'Daily Commute Time',
+                    current: `${comp.current.dailyCommuteHours.toFixed(1)} hrs`,
+                    alt: `${comp.alt.dailyCommuteHours.toFixed(1)} hrs`,
+                    diff: comp.current.dailyCommuteHours - comp.alt.dailyCommuteHours,
+                    unit: ' hrs',
+                    inverse: false
+                },
+                {
+                    label: 'Daily Commute Cost',
+                    current: `$${comp.current.dailyCommuteCost.toFixed(2)}`,
+                    alt: `$${comp.alt.dailyCommuteCost.toFixed(2)}`,
+                    diff: comp.current.dailyCommuteCost - comp.alt.dailyCommuteCost,
+                    unit: '',
+                    inverse: false // Saving money is positive
+                },
+                {
+                    label: 'Yearly Commute Hours',
+                    current: `${comp.current.yearlyCommuteHours.toFixed(0)} hrs`,
+                    alt: `${comp.alt.yearlyCommuteHours.toFixed(0)} hrs`,
+                    diff: comp.current.yearlyCommuteHours - comp.alt.yearlyCommuteHours,
+                    unit: ' hrs',
+                    inverse: false
+                },
+                {
+                    label: 'Yearly Commute Costs',
+                    current: `$${comp.current.yearlyCommuteCosts.toLocaleString()}`,
+                    alt: `$${comp.alt.yearlyCommuteCosts.toLocaleString()}`,
+                    diff: comp.current.yearlyCommuteCosts - comp.alt.yearlyCommuteCosts,
+                    unit: '',
+                    inverse: false
+                },
+                {
+                    label: 'True Hourly Wage',
+                    current: `$${comp.current.trueWage.toFixed(2)}`,
+                    alt: `$${comp.alt.trueWage.toFixed(2)}`,
+                    diff: comp.alt.trueWage - comp.current.trueWage, // Higher wage is positive
+                    unit: '',
+                    inverse: true
+                }
+            ];
+            
+            tbody.innerHTML = metrics.map(m => {
+                const diffValue = m.diff;
+                // For wage, positive diff is good (green). For costs/time, negative diff is good (green).
+                // But here we calculate Current - Alt.
+                // If diff > 0: Current is higher (worse for cost/time, better for wage).
+                
+                let isPositive = diffValue > 0;
+                if (m.inverse) isPositive = diffValue > 0; // For wage, higher is better
+                else isPositive = diffValue < 0; // For costs, lower is better
+                
+                const diffClass = isPositive ? 'diff-positive' : 'diff-negative';
+                const diffSign = diffValue > 0 ? '+' : '';
+                const diffText = m.unit === '' && !m.label.includes('Cost') && !m.label.includes('Wage') 
+                    ? `${diffSign}${diffValue.toFixed(2)}` 
+                    : `${diffSign}${diffValue.toFixed(1)}${m.unit}`;
+                
+                return `
+                    <tr>
+                        <td>${m.label}</td>
+                        <td>${m.current}</td>
+                        <td>${m.alt}</td>
+                        <td class="${diffClass}">${diffText}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            createComparisonCharts(comp);
+        }
+
+        function createComparisonCharts(comp) {
+            // Wage comparison chart
+            const wageCtx = document.getElementById('comparisonWageChart').getContext('2d');
+            if (compWageChart) compWageChart.destroy();
+            
+            compWageChart = new Chart(wageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Current', 'Alternative'],
+                    datasets: [{
+                        label: 'True Hourly Wage ($)',
+                        data: [comp.current.trueWage, comp.alt.trueWage],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'True Wage Comparison',
+                            color: '#f8fafc',
+                            font: { size: 18, weight: 'bold', family: 'Outfit' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#cbd5e1', font: { family: 'JetBrains Mono' } },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            ticks: { color: '#cbd5e1', font: { family: 'Outfit' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            // Cost comparison chart
+            const costCtx = document.getElementById('comparisonCostChart').getContext('2d');
+            if (compCostChart) compCostChart.destroy();
+            
+            compCostChart = new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Current', 'Alternative'],
+                    datasets: [{
+                        label: 'Yearly Commute Costs ($)',
+                        data: [comp.current.yearlyCommuteCosts, comp.alt.yearlyCommuteCosts],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Annual Commute Cost Comparison',
+                            color: '#f8fafc',
+                            font: { size: 18, weight: 'bold', family: 'Outfit' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#cbd5e1', font: { family: 'JetBrains Mono' } },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            ticks: { color: '#cbd5e1', font: { family: 'Outfit' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize transport details on load
+        updateTransportDetails('');
+        updateTransportDetails('alt');
+    </script>
+</body>
+</html>
