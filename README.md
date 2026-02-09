@@ -1,18 +1,18 @@
 
 # True Hourly Wage Calculator
 
-A Python tool that figures out what you _really_ make per hour when you include all the hidden costs of getting to and from work.
-## YouTube Video 
-[Video](https://youtu.be/dLjzEjfybww)
-## New UI!
+A  tool that figures out what you _really_ make per hour when you include all the hidden costs of getting to and from work.
+
+Use the Browser Version (V3.1 Newest)
+Python GUI Version (V3)
+Python Command Line (V2)
+
+## Browser Version (V3.1)
+![Main](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Main%20Screen.png?raw=true)
+
+![Results](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Results.png?raw=true)
+## Python GUI
 ![Main Screen](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.51.40%E2%80%AFPM.png?raw=true)
-![Pay Frequency](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.06%E2%80%AFPM.png?raw=true)
-![Gas Car](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.19%E2%80%AFPM.png?raw=true)
-![EV Car](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.27%E2%80%AFPM.png?raw=true)
-![Public Transport](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.32%E2%80%AFPM.png?raw=true)
-![Walking/Biking](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.52.36%E2%80%AFPM.png?raw=true)
-![Results](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.53.30%E2%80%AFPM.png?raw=true)
-![Results Data Visuals](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%208.53.48%E2%80%AFPM.png?raw=true)
 
 ## Command Line UI
 ![Command Line](https://github.com/OfficialPouya/TakeHomeAdjustment/blob/main/UI%20Pictures/Screenshot%202026-01-31%20at%209.19.00%E2%80%AFPM.png?raw=true)
@@ -47,11 +47,12 @@ Types of commutes:
 2.  **Electric Vehicle** 
     
 3.  **Public Transportation** 
+4.  **Walking/Biking**
     
 
 ## How to Use It
 
- 1.  **Run the program**: `python truecost.py`
+ 1.  **Open HTML Page** or **Run the program**: `python truecost.py`
     
  2.  **Enter your info**: How often you get paid and how much
 		 - Pay
